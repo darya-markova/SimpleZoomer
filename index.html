@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple zoomer</title>
+    <script type="text/javascript" src="assets/jquery.min.js"></script>
+    <style>
+        .wrapper {
+            display: flex;
+            width: 1000px;
+            height: 420px;
+            margin: 100px auto;
+            justify-content: space-between;
+        }
+        .column {
+            width: 50%;
+        }
+        .source {
+            background: url('assets/source.jpg') no-repeat center;
+            background-size: contain;
+            position: relative;
+            border: 1px solid skyblue;
+        }
+        .zoomed {
+            background: url('assets/zoomed.jpg') no-repeat;
+            background-size: 900px 1350px;
+            background-position: center;
+            width: 600px;
+            height: 450px;
+        }
+        .selection {
+            position:absolute;
+            top:calc(50% - 75px);
+            left:calc(50% - 100px);
+            width: 0;
+            height: 0;
+            background: lightskyblue;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="column source">
+            <div class="selection"></div>
+        </div>
+        <div class="column zoomed">
+        </div>
+    </div>
+</body>
+<script>
+    $(document).ready(function() {
+        var zoomedImageHeight = 1350; //hardcoded
+
+
+        var $source = $('.source');
+        var $zoomed = $('.zoomed');
+        var $selection = $('.selection');
+
+
+        var koeff = $source.height() / zoomedImageHeight;
+
+        $selection.css({
+            width: `${$zoomed.width() * koeff}px`,
+            height: `${$zoomed.height() * koeff}px`
+        });
+
+        var minLeft = $source.offset().left;
+        var minTop = $source.offset().top;
+        var maxLeft = minLeft + $source.width() - $selection.width();
+        var maxTop = minTop + $source.height() - $selection.height();
+
+        $source.mousemove(({pageX, pageY}) => {
+            var newX = pageX - $selection.width() / 2;
+            newX = newX < minLeft ? minLeft : newX;
+            newX = newX > maxLeft ? maxLeft : newX;
+
+            var newY = pageY - $selection.height() / 2;
+            newY = newY < minTop ? minTop : newY;
+            newY = newY > maxTop ? maxTop : newY;
+
+            var offsetX = newX - minLeft;
+            var offsetY = newY - minTop;
+
+            //console.log(offsetX, offsetY);
+
+            $selection.offset({
+                left: newX,
+                top: newY
+            });
+
+            $zoomed.css('background-position', `${(-1 * offsetX + ($source.width() - 281) / 2) / koeff}px ${-1 * offsetY / koeff}px`)
+        });
+    });
+</script>
+</html>
