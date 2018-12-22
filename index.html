@@ -10,12 +10,10 @@
             width: 1000px;
             height: 420px;
             margin: 100px auto;
-            justify-content: space-between;
-        }
-        .column {
-            width: 50%;
         }
         .source {
+            width: 340px;
+            height: 420px;
             background: url('assets/source.jpg') no-repeat center;
             background-size: contain;
             position: relative;
@@ -27,6 +25,7 @@
             background-position: center;
             width: 600px;
             height: 450px;
+            display: none;
         }
         .selection {
             position:absolute;
@@ -50,8 +49,8 @@
 </body>
 <script>
     $(document).ready(function() {
-        var zoomedImageHeight = 1350; //hardcoded
-
+        var zoomedImageHeight = 1350; //TODO: don't hardcode!
+        var sourceImageHeight = 281;
 
         var $source = $('.source');
         var $zoomed = $('.zoomed');
@@ -70,6 +69,14 @@
         var maxLeft = minLeft + $source.width() - $selection.width();
         var maxTop = minTop + $source.height() - $selection.height();
 
+        $source.mouseover(() => {
+            $zoomed.fadeIn(300);
+        });
+
+        $source.mouseout(() => {
+            $zoomed.fadeOut(100);
+        });
+
         $source.mousemove(({pageX, pageY}) => {
             var newX = pageX - $selection.width() / 2;
             newX = newX < minLeft ? minLeft : newX;
@@ -82,14 +89,13 @@
             var offsetX = newX - minLeft;
             var offsetY = newY - minTop;
 
-            //console.log(offsetX, offsetY);
 
             $selection.offset({
                 left: newX,
                 top: newY
             });
 
-            $zoomed.css('background-position', `${(-1 * offsetX + ($source.width() - 281) / 2) / koeff}px ${-1 * offsetY / koeff}px`)
+            $zoomed.css('background-position', `${(-1 * offsetX + ($source.width() - sourceImageHeight) / 2) / koeff}px ${-1 * offsetY / koeff}px`)
         });
     });
 </script>
